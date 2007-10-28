@@ -36,7 +36,7 @@ typedef struct {
     const gchar* subtext;
 } regexp;
 
-static const regexp regexps[] = {
+static const regexp portunhol[] = {
     /* palavras */
     {"\\beu\\b", "jo"},
     {"\\bumas\\b", "pero"},
@@ -64,6 +64,31 @@ static const regexp regexps[] = {
     {"\\b(\\w{3,}?)dade\\b", "\\1dad"},
     {NULL, NULL}
 };
+
+static const regexp gripado[] = {
+    {"m([aeiouáéíóúâêôãõAEIOUÁÉÍÓÚÂÊÔÃÕ])", "b\\1"},
+    {"M([aeiouáéíóúâêôãõAEIOUÁÉÍÓÚÂÊÔÃÕ])", "B\\1"},
+    {"n([aeiouáéíóúâêôãõAEIOUÁÉÍÓÚÂÊÔÃÕ])", "d\\1"},
+    {"N([aeiouáéíóúâêôãõAEIOUÁÉÍÓÚÂÊÔÃÕ])", "D\\1"},
+    {"m([pbPB])", "n\\1"},
+    {"M([pbPB])", "N\\1"},
+    {"v", "b"},
+    {"V", "B"},
+    {"p", "b"},
+    {"P", "B"},
+    {"t", "d"},
+    {"T", "D"},
+    {"[sç]", "z"},
+    {"[SÇ]", "Z"},
+    {"qu", "gu"},
+    {"QU", "GU"},
+    {"ch", "j"},
+    {"lh", "dj"},
+    {"\\.\\.\\.", "... A-A-A-Atchô!"},
+    {NULL, NULL}
+};
+
+
 
 int rreplace (char *buf, int size, regex_t *re, char *rp)
 {
@@ -94,13 +119,12 @@ int rreplace (char *buf, int size, regex_t *re, char *rp)
     return 0;
 }
 
-static GString* portunhol(gchar **args)
+static GString* tradutor(gchar **args, const regexp *re)
 {
     GString *msgret = NULL;
     char rp[FILENAME_MAX];
     gchar accstr[FILENAME_MAX];
     strcpy(accstr, g_strjoinv(" ", ++args));
-    regexp *re = &regexps[0];
     regex_t regex;
     while (re->re != NULL) {
         regcomp(&regex, re->re, REG_ICASE|REG_EXTENDED);
@@ -114,7 +138,10 @@ static GString* portunhol(gchar **args)
 }
 
 int main(int *argc, char** argv) {
-  g_printf("%s\n", portunhol(argv)->str);
+  const regexp *re = &portunhol[0];
+  g_printf("portunhol: %s\n", tradutor(argv, re)->str);
+  re = &gripado[0];
+  g_printf("gripado: %s\n", tradutor(argv, re)->str);
   return 0;
 }
 
