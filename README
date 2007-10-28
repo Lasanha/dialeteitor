@@ -1,0 +1,13 @@
+A última sexta-feira de outubro é dedicada a Lo dia internacional de hablarse
+portuñol. Em 2007 acabei descobrindo isso apenas no dia, e quando entrei no site
+vi um script em Python para converter português para esta bela língua. A
+primeira coisa que me ocorreu foi fazer um plugin pro Pidgin, mas infelizmente
+eu não tive tempo durante o dia, só podendo mexer com isso no sábado.
+Pois bem, agora tá pronto! Para quem quiser aqui está o código de um plugin para
+Pidgin que quando utilizado transforma seu português no mais legítimo portuñol!
+(Pois todo portuñol é fajuto, e assim é o meu "tradutor" =D ).
+
+Agradecimentos ao Frank, que ficou fazendo trabalho de IA enquanto eu fuçava nas
+expressões regulares, ao GG, que ajudou a testar, e ao autor do script em Python
+que serviu de inspiração, o Roberto, o oceanógrafo mais computeiro que eu já
+conheci =D

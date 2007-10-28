@@ -1,0 +1,3 @@
+A melhor forma é pegar o arquivo portunholator.so e largar na pasta
+~/.purple/plugins , mas se você quiser compilar e ajudar no desenvolvimento siga
+as instruções em http://developer.pidgin.im/wiki/CHowTo/BasicPluginHowto
