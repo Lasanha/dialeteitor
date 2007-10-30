@@ -1,4 +1,5 @@
 /*
+ * Dialeteitor
  * Copyright 2007 Luiz Irber <luiz.irber@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,32 +17,52 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-/* Este é apenas um programa teste, mais fácil debugar aqui do que dentro do
- * Pidgin. Possivelmente deixará de ser atualizado com o tempo, mas é bom para
- * aprender como usar expressões regulares em C, e principalmente pela função
- * rreplace, que inexplicavelmente não é fornecida na biblioteca padrão de C e
- * no padrão POSIX...
+/* Plugin para você poder falar em certos dialetos do português.
  *
- * A rigor, esse programa é apenas uma tradução para C do script Python
- * disponível em http://www.portunhol.art.br/wiki/Python e escrito por Roberto
+ * A rigor, esse plugin é apenas uma adaptação de scripts disponíveis na
+ * internet. Estava querendo aprender plugins pro Pidgin, e já aproveitei
+ * pra entender melhor ERs também.
+ *
+ * Começou com o Portunholator, script Python disponível em 
+ * http://www.portunhol.art.br/wiki/Python e escrito por Roberto
  * de Almeida, mas como o Pidgin ainda não tem loader para plugins em Python
  * tive que reescrever em C.
  *
- * Com a adição do engripator e do miguxeitor, cabe dizer que são adaptações
+ * Com a adição do engripeitor e do miguxeitor, cabe dizer que são adaptações
  * dos sites
  *     http://www.aurelio.net/web/engripeitor.html e
  *     http://www.aurelio.net/web/miguxeitor.html
- * já que eu só peguei as ER definidas no código fonte e adaptei (inclusive
- * mantive os comentários, para me achar caso hajam atualizações). Todos os
- * créditos, portanto, para Aurélio Jargas pelo trabalho pesado =D
+ * já que eu só peguei as ER definidas no código fonte (em javascript) e 
+ * adaptei (inclusive mantive os comentários, para me achar caso hajam 
+ * atualizações lá). Todos os créditos, portanto, para Aurélio Jargas pelo 
+ * trabalho pesado =D
  * (Comprem o livro de expressões regulares dele, é muito bom!)
+ *
+ * Planos futuros incluem o Caipirator (sugestão do Frank).
  */
 
-#include <glib.h>
-#include <glib/gprintf.h>
+
 #include <regex.h>
 #include <string.h>
-#include <stdlib.h>
+
+#define PURPLE_PLUGINS
+#define PLUGIN_ID "core-dialeteitor"
+
+#include "cmds.h"
+#include "conversation.h"
+#include "plugin.h"
+#include "util.h"
+#include "version.h"
+
+PurplePlugin *plugin_handle = NULL;
+
+static PurpleCmdId port_cmd;
+static PurpleCmdId gripado_cmd;
+static PurpleCmdId miguxo_cmd;
+
+static int port_cmd_id    = 1;
+static int gripado_cmd_id = 1 << 1;
+static int miguxo_cmd_id  = 1 << 2;
 
 typedef struct {
     const gchar* re;
@@ -311,7 +332,7 @@ static const regexp miguxo[] = {
     {NULL, NULL}
 };
 
-int rreplace (char *buf, int size, regex_t *re, char *rp)
+static int rreplace (char *buf, int size, regex_t *re, gchar *rp)
 {
     char *pos;
     int sub, so, n;
@@ -379,13 +400,125 @@ static GString* tradutor(gchar **args, const regexp *re, int flags)
     return msgret;
 }
 
-int main(int *argc, char** argv) {
-  const regexp *re = &portunhol[0];
-  g_printf("portunhol: %s\n", tradutor(argv, re, REG_ICASE)->str);
-  re = &gripado[0];
-  g_printf("gripado: %s\n", tradutor(argv, re, 0)->str);
-  re = &miguxo[0];
-  g_printf("miguxo: %s\n", camelize(tradutor(argv, re, REG_ICASE))->str);
-  return 0;
+static PurpleCmdRet
+cmd_func(PurpleConversation *conv, const gchar *cmd, gchar **args,
+         gchar *error, void *data)
+{
+    GString *msgstr = NULL;
+    GString *message = NULL;
+    msgstr = g_string_new("");
+
+    if (*args != NULL) {
+        switch ((int)(*data)) {
+            case port_cmd_id:
+                message = tradutor(args, &portunhol[0], REG_ICASE);
+                break;
+            case gripado_cmd_id:
+                message = tradutor(args, &gripado[0], 0);
+                break;
+            case miguxo_cmd_id:
+                message = tradutor(args, &miguxo[0], REG_ICASE);
+                break;
+        }
+        g_string_append(msgstr, message->str);
+        g_string_free(message, TRUE);
+    }
+
+    switch(purple_conversation_get_type(conv)) {
+        case PURPLE_CONV_TYPE_IM:
+            purple_conv_im_send(PURPLE_CONV_IM(conv), msgstr->str);
+            break;
+        case PURPLE_CONV_TYPE_CHAT:
+            purple_conv_chat_send(PURPLE_CONV_CHAT(conv), msgstr->str);
+            break;
+        default:
+            g_string_free(msgstr, TRUE);
+            return PURPLE_CMD_RET_FAILED;
+    }
+
+    g_string_free(msgstr, TRUE);
+
+    return PURPLE_CMD_RET_OK;
 }
 
+static gboolean
+plugin_load(PurplePlugin *plugin)
+{
+    const gchar *portunhol_help;
+    const gchar *gripado_help;
+    const gchar *miguxo_help;
+
+    PurpleCmdFlag flags = PURPLE_CMD_FLAG_IM | PURPLE_CMD_FLAG_CHAT;
+
+    portunhol_help = ("portunhol <mensagem>: envia a <mensagem> "
+                      "traduzida para portunhol.\nCréditos para "
+                      "Roberto de Almeida (http://dealmeida.net)");
+
+    gripado_help = ("gripado <mensagem>: envia a <mensagem> "
+                    "traduzida para engripado\nCréditos para "
+                    "Aurélio Jargas (http://aurelio.net)");
+
+    miguxo_help = ("miguxo <mensagem>: envia a <mensagem> "
+                   "traduzida para miguxês\nCréditos para "
+                   "Aurélio Jargas (http://aurelio.net)");
+
+    port_cmd = purple_cmd_register("portunhol", "s", PURPLE_CMD_P_PLUGIN,
+                               flags, NULL, PURPLE_CMD_FUNC(cmd_func),
+                               portunhol_help, &port_cmd_id);
+
+    gripado_cmd = purple_cmd_register("gripado", "s", PURPLE_CMD_P_PLUGIN,
+                               flags, NULL, PURPLE_CMD_FUNC(cmd_func),
+                               gripe_help, &gripado_cmd_id);
+
+    miguxo_cmd = purple_cmd_register("miguxo", "s", PURPLE_CMD_P_PLUGIN,
+                               flags, NULL, PURPLE_CMD_FUNC(cmd_func),
+                               miguxo_help, &miguxo_cmd_id);
+    return TRUE;
+}
+
+static gboolean
+plugin_unload(PurplePlugin *plugin)
+{
+    purple_cmd_unregister(port);
+
+    return TRUE;
+}
+
+static PurplePluginInfo info =
+{
+     PURPLE_PLUGIN_MAGIC,
+     PURPLE_MAJOR_VERSION,
+     PURPLE_MINOR_VERSION,
+     PURPLE_PLUGIN_STANDARD,
+     NULL,
+     0,
+     NULL,
+     PURPLE_PRIORITY_DEFAULT,
+     PLUGIN_ID,
+     "Dialeteitor",
+     "1.0",
+     "Tradutor para dialetos diversos",
+     "Registra os comandos /portunhol, /gripado e /miguxo para traduzir "
+     "sua mensagem. Para mais informações, digite /help <nome-do-comando> .",
+     "Luiz Irber <luiz.irber@gmail.com>",
+     "http://www.comp.ufscar.br/~luizcarlos/projects/dialeteitor/",
+     plugin_load,
+     plugin_unload,
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+	 /* padding */
+     NULL,
+     NULL,
+     NULL,
+     NULL
+};
+
+ static void
+ init_plugin(PurplePlugin *plugin)
+ {
+ }
+
+PURPLE_INIT_PLUGIN(dialeteitor, init_plugin, info)
