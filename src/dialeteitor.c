@@ -23,7 +23,7 @@
  * internet. Estava querendo aprender plugins pro Pidgin, e já aproveitei
  * pra entender melhor ERs também.
  *
- * Começou com o Portunholator, script Python disponível em 
+ * Começou com o Portunholator, script Python disponível em
  * http://www.portunhol.art.br/wiki/Python e escrito por Roberto
  * de Almeida, mas como o Pidgin ainda não tem loader para plugins em Python
  * tive que reescrever em C.
@@ -32,16 +32,16 @@
  * dos sites
  *     http://www.aurelio.net/web/engripeitor.html e
  *     http://www.aurelio.net/web/miguxeitor.html
- * já que eu só peguei as ER definidas no código fonte (em javascript) e 
- * adaptei (inclusive mantive os comentários, para me achar caso hajam 
- * atualizações lá). Todos os créditos, portanto, para Aurélio Jargas pelo 
+ * já que eu só peguei as ER definidas no código fonte (em javascript) e
+ * adaptei (inclusive mantive os comentários, para me achar caso hajam
+ * atualizações lá). Todos os créditos, portanto, para Aurélio Jargas pelo
  * trabalho pesado =D
  * (Comprem o livro de expressões regulares dele, é muito bom!)
  *
- * Planos futuros incluem o Caipirator (sugestão do Frank).
+ * Planos futuros incluem o Caipireitor (sugestão do Frank).
  */
 
-
+#include <stdlib.h>
 #include <regex.h>
 #include <string.h>
 
@@ -54,15 +54,13 @@
 #include "util.h"
 #include "version.h"
 
+#include "debug.h"
+
 PurplePlugin *plugin_handle = NULL;
 
 static PurpleCmdId port_cmd;
 static PurpleCmdId gripado_cmd;
 static PurpleCmdId miguxo_cmd;
-
-static int port_cmd_id    = 1;
-static int gripado_cmd_id = 1 << 1;
-static int miguxo_cmd_id  = 1 << 2;
 
 typedef struct {
     const gchar* re;
@@ -364,9 +362,9 @@ static int rreplace (char *buf, int size, regex_t *re, gchar *rp)
 static GString* camelize(GString* input)
 {
     GString* retstr = g_string_new("");
-    input = g_string_ascii_down(input);
     int pos = 0;
     srand(time(NULL));
+    input = g_string_ascii_down(input);
     for (pos = 0; pos <= input->len; pos++) {
         if (input->str[pos] <= 122 && input->str[pos] >= 97) {
             if (rand()%2) // capitaliza
@@ -387,7 +385,7 @@ static GString* tradutor(gchar **args, const regexp *re, int flags)
     gchar *accstr = NULL;
     regex_t regex;
 
-    accstr = g_strjoinv(" ", ++args);
+    accstr = g_strjoinv(" ", args);
     while (re->re != NULL) {
         regcomp(&regex, re->re, flags|REG_EXTENDED);
         rreplace(accstr, strlen(accstr) + 1, &regex, strcpy(rp, re->subtext));
@@ -409,16 +407,14 @@ cmd_func(PurpleConversation *conv, const gchar *cmd, gchar **args,
     msgstr = g_string_new("");
 
     if (*args != NULL) {
-        switch ((int)(*data)) {
-            case port_cmd_id:
-                message = tradutor(args, &portunhol[0], REG_ICASE);
-                break;
-            case gripado_cmd_id:
-                message = tradutor(args, &gripado[0], 0);
-                break;
-            case miguxo_cmd_id:
-                message = tradutor(args, &miguxo[0], REG_ICASE);
-                break;
+        if (!strcmp(data, "portunhol")) {
+            message = tradutor(args, &portunhol[0], REG_ICASE);
+        }
+        else if (!strcmp(data, "gripado")) {
+            message = tradutor(args, &gripado[0], 0);
+        }
+        else if (!strcmp(data, "miguxo")) {
+            message = camelize(tradutor(args, &miguxo[0], REG_ICASE));
         }
         g_string_append(msgstr, message->str);
         g_string_free(message, TRUE);
@@ -464,22 +460,24 @@ plugin_load(PurplePlugin *plugin)
 
     port_cmd = purple_cmd_register("portunhol", "s", PURPLE_CMD_P_PLUGIN,
                                flags, NULL, PURPLE_CMD_FUNC(cmd_func),
-                               portunhol_help, &port_cmd_id);
+                               portunhol_help, "portunhol");
 
     gripado_cmd = purple_cmd_register("gripado", "s", PURPLE_CMD_P_PLUGIN,
                                flags, NULL, PURPLE_CMD_FUNC(cmd_func),
-                               gripe_help, &gripado_cmd_id);
+                               gripado_help, "gripado");
 
     miguxo_cmd = purple_cmd_register("miguxo", "s", PURPLE_CMD_P_PLUGIN,
                                flags, NULL, PURPLE_CMD_FUNC(cmd_func),
-                               miguxo_help, &miguxo_cmd_id);
+                               miguxo_help, "miguxo");
     return TRUE;
 }
 
 static gboolean
 plugin_unload(PurplePlugin *plugin)
 {
-    purple_cmd_unregister(port);
+    purple_cmd_unregister(port_cmd);
+    purple_cmd_unregister(gripado_cmd);
+    purple_cmd_unregister(miguxo_cmd);
 
     return TRUE;
 }
