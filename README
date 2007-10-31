@@ -1,13 +1,53 @@
-A última sexta-feira de outubro é dedicada a Lo dia internacional de hablarse
-portuñol. Em 2007 acabei descobrindo isso apenas no dia, e quando entrei no site
-vi um script em Python para converter português para esta bela língua. A
-primeira coisa que me ocorreu foi fazer um plugin pro Pidgin, mas infelizmente
-eu não tive tempo durante o dia, só podendo mexer com isso no sábado.
-Pois bem, agora tá pronto! Para quem quiser aqui está o código de um plugin para
-Pidgin que quando utilizado transforma seu português no mais legítimo portuñol!
-(Pois todo portuñol é fajuto, e assim é o meu "tradutor" =D ).
 
-Agradecimentos ao Frank, que ficou fazendo trabalho de IA enquanto eu fuçava nas
-expressões regulares, ao GG, que ajudou a testar, e ao autor do script em Python
-que serviu de inspiração, o Roberto, o oceanógrafo mais computeiro que eu já
-conheci =D
+O QUE É?
+
+  Este é o dialeteitor, o tradutor para dialetos do português para Pidgin. Ele
+  provê três comandos:
+    /portunhol <mensagem>
+      que traduz sua mensagem para portunhol e possibilita compras na fronteira.
+    /gripado <mensagem>
+      que permite que você fale com seus amigos quando estiver gripado (cuidado
+      para não tossir e passar o vírus =D)
+    /miguxo <mensagem>
+      que ajuda você a se comunicar (unidirecionalmente, porque só ela vai
+      entender o que você diz, e não o contrário) com sua prima adolescente.
+
+POR QUE FOI CRIADO?
+
+  Criei ele para ver como é que se escrevem plugins pro Pidgin (não é muito
+  difícil, esperem mais =D) e para entender melhor o funcionamento de ERs (porque
+  esses tradutores na verdade só aplicam várias ERs sobre a mensagem, fazendo
+  substituições).
+
+QUER AJUDAR?
+
+  Se você quiser adicionar mais dialetos, ou então ver como é que o plugin
+  funciona, ele está disponível em um repositório git em
+    TODO: adicionar o link aqui!
+  Às vezes o servidor tá fora do ar, principalmente em fins de semana. Mas
+  tenham paciência que vocês conseguem pegar o código.
+
+AGRADECIMENTOS:
+  * Roberto de Almeida, pelo script Python para tradução para Portunhol, que foi a
+  inspiração inicial do plugin. Site: http://dealmeida.net
+
+  * Aurélio Jargas, pelo Miguxeitor e o Engripeitor, essenciais para esse
+  plugin, e por ter publicado o livro "Expressões Regulares - Uma abordagem
+  divertida", que ajudou bastante na minha compreensão de ERs (Compre o livro,
+  vale a pena =D). Site: http://aurelio.net
+
+  * Alexandre Harano, por ter levado o trabalho de IA nas costas enquanto eu
+  ficava fuçando no plugin, e por ter sugerido o Caipireitor.
+  Site:  http://www.comp.ufscar.br/~ayharano
+
+  * Gabriel Marcondes, pelos testes e pela curiosidade de como funcionam
+  bibliotecas compartilhadas no Linux. Visitem o blog dele, ele vai gostar.
+  Site: http://vainalousachefe.wordpress.com
+
+  Para mais informações sobre a história do plugin e inspirações, veja o arquivo
+  HISTORY.
+
+  Espero que seja útil, e que você se divirta usando tanto quando eu me diverti
+  fazendo ele =]
+
+  Luiz Irber

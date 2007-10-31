@@ -1,0 +1,22 @@
+A última sexta-feira de outubro é dedicada a Lo dia internacional de hablarse
+portuñol. Em 2007 acabei descobrindo isso apenas no dia, e quando entrei no site
+vi um script em Python para converter português para esta bela língua. A
+primeira coisa que me ocorreu foi fazer um plugin pro Pidgin, mas infelizmente
+eu não tive tempo durante o dia, só podendo mexer com isso no sábado.
+Depois de passar o tal sábado fazendo ele, o dito cujo funcionava, mas eu achei
+ele um tanto incompleto... É necessário adicionar mais regras, para melhorar a
+"tradução".
+Mas então caiu a ficha: se eu generaliza-se a função de tradução, daria pra
+fazer vários tradutores diferentes, e foi o que eu fiz! Mas daí eu fiquei sem
+novas regras para fazer a tradução. Entra em cena o miguxeitor!
+Aurélio Jargas fez um tradutor para miguxês a algum tempo atrás, e como ele usou
+javascript para criar a função, o código estava disponível na página, juntamente
+com umas 200 ERs diferentes para fazer a tradução. Resolvi pegar elas e criar um
+novo comando para o plugin. Aproveitando o embalo peguei o Engripeitor também e
+coloquei no plugin (até porque esse era bem fácil =D).
+
+
+Agradecimentos ao Frank, que ficou fazendo trabalho de IA enquanto eu fuçava nas
+expressões regulares, ao GG, que ajudou a testar, e ao autor do script em Python
+que serviu de inspiração, o Roberto, o oceanógrafo mais computeiro que eu já
+conheci =D
