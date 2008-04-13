@@ -8,3 +8,6 @@ LIBS = `pkg-config glib-2.0 --libs`
 
 g_str: g_str.c
 	$(CC) g_str.c -o g_str $(FLAGS) $(LIBS)
+
+clean:
+	rm g_str
