@@ -2,8 +2,8 @@
 #define DATA_H
 
 typedef struct {
-    const gchar* re;
-    const gchar* subtext;
+    const char* re;
+    const char* subtext;
 } regexp;
 
 static const regexp portunhol[] = {
