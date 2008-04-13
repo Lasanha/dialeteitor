@@ -268,4 +268,15 @@ static const regexp miguxo[] = {
 
     {NULL, NULL}
 };
+
+static const regexp alemon[] = {
+    {"b", "p"},
+    {"v", "f"},
+    {"g", "c"},
+    {"t", "d"},
+    {"ch", "j"},
+    {"s\\b", ""},
+    {NULL, NULL}
+};
+
 #endif /* DATA_H */

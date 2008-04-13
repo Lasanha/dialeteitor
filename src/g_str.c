@@ -120,6 +120,8 @@ int main(int *argc, char** argv) {
   g_printf("gripado: %s\n", tradutor(argv, re, 0)->str);
   re = &miguxo[0];
   g_printf("miguxo: %s\n", camelize(tradutor(argv, re, REG_ICASE))->str);
+  re = &alemon[0];
+  g_printf("alemon: %s\n", tradutor(argv, re, REG_ICASE)->str);
   return 0;
 }
 
